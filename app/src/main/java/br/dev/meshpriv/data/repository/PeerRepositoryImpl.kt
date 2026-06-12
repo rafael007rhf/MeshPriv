@@ -4,6 +4,8 @@ import br.dev.meshpriv.data.local.dao.PeerDao
 import br.dev.meshpriv.data.local.entity.PeerEntity
 import br.dev.meshpriv.domain.model.Peer
 import br.dev.meshpriv.domain.repository.PeerRepository
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 
 class PeerRepositoryImpl @Inject constructor(
@@ -12,6 +14,9 @@ class PeerRepositoryImpl @Inject constructor(
 
     override suspend fun getPeer(nodeId: String): Peer? =
         peerDao.getByNodeId(nodeId)?.toDomain()
+
+    override fun observePeers(): Flow<List<Peer>> =
+        peerDao.observeAll().map { entities -> entities.map { it.toDomain() } }
 
     private fun PeerEntity.toDomain() = Peer(
         nodeId = nodeId,

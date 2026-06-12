@@ -145,7 +145,7 @@ class MessageRouter(
             return
         }
 
-        // TODO(semana-N): persistir com Room quando a camada de dados existir
+        // A persistência com Room é feita pelo coletor de deliveredMessages na Application
         _deliveredMessages.emit(
             Message(
                 messageId = packet.packetId,
