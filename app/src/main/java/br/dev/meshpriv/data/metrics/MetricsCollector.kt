@@ -14,7 +14,8 @@ import java.util.UUID
  * Componente mais crítico do projeto: os dados registrados aqui são o experimento do artigo.
  *
  * Consome os eventos do MessageRouter e persiste DeliveryMetric completas.
- * Envios ficam num mapa de pendências até a entrega (ou descarte) fechar a métrica.
+ * Envios ficam num mapa de pendências até o ACK retornar (ou o descarte) fechar a métrica
+ * no lado do remetente; a entrega no destinatário gera um registro unidirecional próprio.
  */
 class MetricsCollector(
     private val metricsRepository: MetricsRepository,
@@ -46,6 +47,7 @@ class MetricsCollector(
     suspend fun onRouterEvent(event: MessageRouter.Event) {
         when (event) {
             is MessageRouter.Event.MessageSent -> onMessageSent(event)
+            is MessageRouter.Event.AckReceived -> onAckReceived(event)
             is MessageRouter.Event.PacketDroppedTtl -> onPacketDropped(event)
             // Falhas de cifra/envio não geram DeliveryMetric — não medem a rede
             is MessageRouter.Event.DecryptFailed -> Unit
@@ -63,6 +65,34 @@ class MetricsCollector(
                 networkSize = event.networkSize
             )
         }
+    }
+
+    /**
+     * ACK retornou ao remetente: fecha a métrica de entrega do lado do remetente.
+     *
+     * Semântica revisada de latência: aqui latencyMs = chegada do ACK − envio, medido só
+     * pelo relógio local (sem o problema de clock sync), mas inclui a viagem de volta do
+     * ACK — é "tempo até a confirmação", não latência unidirecional. O registro
+     * unidirecional do destinatário (onMessageDelivered) continua sendo gravado à parte.
+     */
+    private suspend fun onAckReceived(event: MessageRouter.Event.AckReceived) {
+        val pendingSend = mutex.withLock { pending.remove(event.messageId) }
+        metricsRepository.saveMetric(
+            DeliveryMetric(
+                metricId = UUID.randomUUID().toString(),
+                messageId = event.messageId,
+                sourceId = pendingSend?.sourceId ?: event.sourceId,
+                destinationId = pendingSend?.destinationId ?: event.destinationId,
+                // Sem envio pendente (ex.: app reiniciado) não há sentAt para comparar
+                latencyMs = pendingSend?.let { event.receivedAt - it.sentAt } ?: LATENCIA_NAO_APLICAVEL,
+                hopCount = event.hopCount,
+                delivered = true,
+                batteryLevelStart = pendingSend?.batteryLevelStart ?: BATERIA_DESCONHECIDA,
+                batteryLevelEnd = batteryMonitor.getCurrentLevel(),
+                networkSize = pendingSend?.networkSize ?: 0,
+                recordedAt = clock()
+            )
+        )
     }
 
     /**

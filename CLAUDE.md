@@ -252,23 +252,36 @@ data class Message(
     val status: MessageStatus    // SENDING, DELIVERED, FAILED
 )
 
+// Lado do remetente: SENDING ao despachar, DELIVERED quando o ACK do destinatário retorna.
+// Sem timeout no MVP: se o ACK nunca chegar, o status permanece SENDING.
 enum class MessageStatus { SENDING, DELIVERED, FAILED }
 ```
 
 ### `MeshPacket`
 ```kotlin
+// MESSAGE transporta conteúdo cifrado; ACK confirma a entrega ao remetente original
+@Serializable
+enum class PacketType { MESSAGE, ACK }
+
 @Serializable
 data class MeshPacket(
     val packetId: String,        // UUID v4 — usado para deduplicação
     val sourceId: String,        // nodeId do remetente original
     val destinationId: String,   // nodeId do destinatário final
-    val encryptedPayload: ByteArray, // conteúdo cifrado com AES-GCM
+    val type: PacketType = PacketType.MESSAGE, // default MESSAGE: compatibilidade com pacotes antigos
+    val encryptedPayload: ByteArray, // MESSAGE: cifrado com AES-GCM | ACK: messageId original em claro
     val senderPublicKey: ByteArray,  // chave pública do remetente (para decriptografia)
     val ttl: Int,                // Time To Live — começa em 7, decrementado a cada hop
     val hopCount: Int,           // incrementado a cada hop
     val createdAt: Long          // timestamp de criação no remetente
 )
 ```
+
+**Semântica do ACK:** quando uma MESSAGE chega ao destinatário final, ele gera um pacote
+ACK de volta para o remetente original: `sourceId` = quem recebeu, `destinationId` = quem
+enviou, payload = o `messageId` confirmado. O payload do ACK **não é cifrado** no MVP — ele
+só referencia um ID que já trafega em claro no `packetId` da MESSAGE, sem conteúdo
+confidencial.
 
 ### `DeliveryMetric`
 ```kotlin
@@ -318,11 +331,16 @@ Responsabilidade: decidir o que fazer com cada `MeshPacket` recebido ou a enviar
 **Algoritmo de recebimento:**
 ```
 1. Verificar se packetId já está no SeenMessageCache
-   → Se sim: DESCARTAR (deduplicação)
+   → Se sim: DESCARTAR (deduplicação — vale para MESSAGE e ACK)
    → Se não: REGISTRAR no cache
 
 2. Verificar se destinationId == localNodeId
-   → Se sim: ENTREGAR à camada de domínio (descriptografar + salvar + notificar)
+   → Se sim e type == MESSAGE:
+       ENTREGAR à camada de domínio (descriptografar + salvar + notificar)
+       e ENVIAR um ACK de volta ao remetente original (ver regras abaixo)
+   → Se sim e type == ACK:
+       marcar a mensagem original como DELIVERED, registrar receivedAt
+       e emitir evento para as métricas — NUNCA gerar outro ACK (guarda contra loop)
    → Se não: continuar
 
 3. Verificar se ttl <= 0
@@ -331,17 +349,30 @@ Responsabilidade: decidir o que fazer com cada `MeshPacket` recebido ou a enviar
 
 4. RETRANSMITIR para todos os peers conectados exceto o peer de origem
    com ttl decrementado e hopCount incrementado
+   (um ACK em trânsito num nó relay é só encaminhado, nunca tratado como entregue)
 ```
+
+**Regras do ACK de entrega:**
+- Gerado apenas quando uma MESSAGE é entregue com sucesso no destinatário final
+  (falha de decriptografia não gera ACK)
+- packetId NOVO (UUID), `type=ACK`, `ttl=7`, `hopCount=0`,
+  `sourceId` = destinatário original, `destinationId` = remetente original,
+  payload = messageId confirmado em claro
+- Roteado de volta pelo mesmo flooding (dedup + TTL + retransmissão idênticos à MESSAGE)
+- Registrar o packetId do ACK no SeenMessageCache antes de enviar (não reprocessar o eco)
+- Um ACK NUNCA gera outro ACK — sem isso o protocolo entraria em loop infinito
 
 **Algoritmo de envio:**
 ```
 1. Receber Message do domínio
 2. Buscar chave pública do destinatário no PeerRepository
 3. Cifrar payload com CryptoManager
-4. Criar MeshPacket com ttl=7, hopCount=0, packetId=UUID
+4. Criar MeshPacket com type=MESSAGE, ttl=7, hopCount=0, packetId=UUID
 5. Registrar packetId no SeenMessageCache (para não reprocessar eco)
 6. Enviar para todos os peers conectados via NearbyConnectionsManager
 7. Registrar timestamp de envio nas métricas
+8. Status fica SENDING até o ACK retornar (sem timeout no MVP:
+   sem ACK, permanece SENDING)
 ```
 
 ### `SeenMessageCache`
@@ -413,15 +444,21 @@ Este é o componente mais crítico do projeto — os dados que ele coleta são o
 | Evento | Campos |
 |---|---|
 | Mensagem enviada | messageId, sourceId, destinationId, sentAt, batteryLevelStart, networkSize |
-| Mensagem entregue | messageId, receivedAt, hopCount, batteryLevelEnd |
+| Mensagem entregue (destinatário) | messageId, receivedAt, hopCount, batteryLevelEnd |
+| ACK recebido (remetente) | messageId, receivedAt do ACK, hopCount do ACK, batteryLevelEnd — fecha delivered=true |
 | Mensagem descartada (TTL=0) | messageId, hopCount atingido |
 | Peer conectado | peerId, connectedAt |
 | Peer desconectado | peerId, disconnectedAt |
 
-**Cálculo de latência:**
-- `latencyMs = receivedAt - sentAt`
-- Só válido quando remetente e destinatário estão no mesmo teste sincronizado
-- Registrar observação sobre limitação de clock sync no artigo
+**Cálculo de latência (semântica revisada com o ACK):**
+- **Lado do remetente:** `latencyMs = chegada_do_ACK - sentAt`, medido só pelo relógio
+  local — sem o problema de clock sync, mas inclui a viagem de volta do ACK
+  ("tempo até a confirmação", aproximadamente round-trip, não latência unidirecional)
+- **Lado do destinatário:** o registro unidirecional `receivedAt - sentAt` continua
+  sendo gravado, mas só é válido quando remetente e destinatário estão no mesmo
+  teste sincronizado — registrar a limitação de clock sync no artigo
+- `delivered=true` agora é fechado no remetente quando o ACK retorna — a taxa de
+  entrega passa a ser mensurável no próprio dispositivo que enviou
 
 **`BatteryMonitor`:**
 ```kotlin

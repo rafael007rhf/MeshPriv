@@ -8,6 +8,7 @@ import br.dev.meshpriv.data.mesh.SeenMessageCache
 import br.dev.meshpriv.data.metrics.BatteryMonitor
 import br.dev.meshpriv.data.metrics.MetricsCollector
 import br.dev.meshpriv.domain.model.LocalIdentity
+import br.dev.meshpriv.domain.repository.MessageRepository
 import br.dev.meshpriv.domain.repository.MetricsRepository
 import br.dev.meshpriv.domain.repository.PeerRepository
 import dagger.Module
@@ -49,9 +50,10 @@ object MeshModule {
         cryptoManager: CryptoManager,
         seenCache: SeenMessageCache,
         nearbyManager: NearbyConnectionsManager,
-        peerRepository: PeerRepository
+        peerRepository: PeerRepository,
+        messageRepository: MessageRepository
     ): MessageRouter =
-        MessageRouter(localIdentity, cryptoManager, seenCache, nearbyManager, peerRepository)
+        MessageRouter(localIdentity, cryptoManager, seenCache, nearbyManager, peerRepository, messageRepository)
 
     @Provides
     @Singleton

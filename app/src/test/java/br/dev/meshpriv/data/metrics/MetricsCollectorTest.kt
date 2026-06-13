@@ -73,6 +73,56 @@ class MetricsCollectorTest {
     }
 
     @Test
+    fun `ACK recebido fecha métrica do remetente com delivered true`() = runTest {
+        every { batteryMonitor.getCurrentLevel() } returnsMany listOf(80, 78)
+
+        collector.onRouterEvent(
+            MessageRouter.Event.MessageSent(message(sentAt = 1000L), networkSize = 3)
+        )
+        collector.onRouterEvent(
+            MessageRouter.Event.AckReceived(
+                messageId = "msg-1",
+                sourceId = "AAAA1111",
+                destinationId = "BBBB2222",
+                hopCount = 2,
+                receivedAt = 1700L
+            )
+        )
+
+        val metric = metricSlot.captured
+        assertTrue(metric.delivered)
+        // Latência do remetente = tempo até o ACK voltar (relógio local, semântica ida + volta)
+        assertEquals(700L, metric.latencyMs)
+        assertEquals(2, metric.hopCount)
+        assertEquals(80, metric.batteryLevelStart)
+        assertEquals(78, metric.batteryLevelEnd)
+        assertEquals(3, metric.networkSize)
+        assertEquals("AAAA1111", metric.sourceId)
+        assertEquals("BBBB2222", metric.destinationId)
+    }
+
+    @Test
+    fun `ACK sem envio pendente registra entrega sem latência`() = runTest {
+        every { batteryMonitor.getCurrentLevel() } returns 70
+
+        // Ex.: app reiniciado entre o envio e a volta do ACK — não há sentAt para comparar
+        collector.onRouterEvent(
+            MessageRouter.Event.AckReceived(
+                messageId = "msg-9",
+                sourceId = "AAAA1111",
+                destinationId = "BBBB2222",
+                hopCount = 1,
+                receivedAt = 5000L
+            )
+        )
+
+        val metric = metricSlot.captured
+        assertTrue(metric.delivered)
+        assertEquals(MetricsCollector.LATENCIA_NAO_APLICAVEL, metric.latencyMs)
+        assertEquals(MetricsCollector.BATERIA_DESCONHECIDA, metric.batteryLevelStart)
+    }
+
+    @Test
     fun `pacote descartado por ttl gera métrica com delivered false`() = runTest {
         every { batteryMonitor.getCurrentLevel() } returnsMany listOf(90, 85)
 

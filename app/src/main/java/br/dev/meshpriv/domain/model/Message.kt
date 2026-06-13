@@ -11,4 +11,7 @@ data class Message(
     val status: MessageStatus
 )
 
+// Lado do remetente: SENDING ao despachar, DELIVERED quando o ACK do destinatário retorna.
+// Sem timeout no MVP: se o ACK nunca chegar, o status permanece SENDING (aceitável — a
+// ausência de confirmação já é o dado; FAILED fica para falhas locais de envio/cifra).
 enum class MessageStatus { SENDING, DELIVERED, FAILED }

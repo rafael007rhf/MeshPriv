@@ -5,6 +5,8 @@ import br.dev.meshpriv.domain.model.LocalIdentity
 import br.dev.meshpriv.domain.model.MeshPacket
 import br.dev.meshpriv.domain.model.Message
 import br.dev.meshpriv.domain.model.MessageStatus
+import br.dev.meshpriv.domain.model.PacketType
+import br.dev.meshpriv.domain.repository.MessageRepository
 import br.dev.meshpriv.domain.repository.PeerRepository
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -22,7 +24,8 @@ class MessageRouter(
     private val cryptoManager: CryptoManager,
     private val seenCache: SeenMessageCache,
     private val nearbyManager: NearbyConnectionsManager,
-    private val peerRepository: PeerRepository
+    private val peerRepository: PeerRepository,
+    private val messageRepository: MessageRepository
 ) {
 
     companion object {
@@ -48,6 +51,15 @@ class MessageRouter(
         ) : Event()
         data class DecryptFailed(val packetId: String) : Event()
         data class SendFailed(val recipientId: String, val reason: String) : Event()
+
+        /** ACK de entrega retornou ao remetente original (este nó). */
+        data class AckReceived(
+            val messageId: String,      // mensagem original confirmada
+            val sourceId: String,       // remetente original da mensagem (este nó)
+            val destinationId: String,  // destinatário original, que gerou o ACK
+            val hopCount: Int,          // saltos que o ACK percorreu na volta
+            val receivedAt: Long        // chegada do ACK pelo relógio local do remetente
+        ) : Event()
     }
 
     /** Conecta o roteador ao fluxo de bytes brutos vindos do Nearby Connections. */
@@ -68,9 +80,16 @@ class MessageRouter(
         if (seenCache.hasSeen(packet.packetId)) return
         seenCache.markSeen(packet.packetId)
 
-        // 2. Pacote destinado a este nó: entregar à camada de domínio
+        // 2. Pacote destinado a este nó: tratar conforme o tipo.
+        // O when exaustivo é a guarda contra loop infinito: só MESSAGE gera ACK —
+        // um ACK que chega ao destino termina aqui, nunca produz outro ACK.
         if (packet.destinationId == localIdentity.nodeId) {
-            deliver(packet)
+            when (packet.type) {
+                PacketType.MESSAGE -> {
+                    if (deliver(packet)) sendAck(packet)
+                }
+                PacketType.ACK -> handleAck(packet)
+            }
             return
         }
 
@@ -82,7 +101,8 @@ class MessageRouter(
             return
         }
 
-        // 4. Retransmitir para todos os peers conectados exceto a origem
+        // 4. Retransmitir para todos os peers conectados exceto a origem.
+        // Vale para MESSAGE e ACK: num nó relay, um ACK em trânsito é só encaminhado
         val forwarded = packet.copy(ttl = packet.ttl - 1, hopCount = packet.hopCount + 1)
         nearbyManager.sendToAll(encode(forwarded), excludeEndpointId = fromEndpointId)
     }
@@ -136,13 +156,14 @@ class MessageRouter(
         return message
     }
 
-    private suspend fun deliver(packet: MeshPacket) {
+    /** @return true se a mensagem foi entregue — só entregas reais geram ACK. */
+    private suspend fun deliver(packet: MeshPacket): Boolean {
         val content = runCatching {
             cryptoManager.decrypt(packet.encryptedPayload, packet.senderPublicKey)
         }.getOrElse {
             // Falha na tag GCM ou payload corrompido — nunca entregar conteúdo não autenticado
             _events.emit(Event.DecryptFailed(packet.packetId))
-            return
+            return false
         }
 
         // A persistência com Room é feita pelo coletor de deliveredMessages na Application
@@ -156,6 +177,51 @@ class MessageRouter(
                 receivedAt = System.currentTimeMillis(),
                 hopCount = packet.hopCount,
                 status = MessageStatus.DELIVERED
+            )
+        )
+        return true
+    }
+
+    /**
+     * Confirma a entrega ao remetente original: ACK roteado de volta pelo mesmo flooding,
+     * com packetId novo (para a deduplicação tratá-lo como pacote independente) e ttl cheio.
+     * Sem exclusão de endpoint: o caminho de volta costuma ser justamente o peer de onde
+     * a mensagem veio.
+     */
+    private suspend fun sendAck(original: MeshPacket) {
+        val ack = MeshPacket(
+            packetId = UUID.randomUUID().toString(),
+            sourceId = localIdentity.nodeId,
+            destinationId = original.sourceId,
+            type = PacketType.ACK,
+            // Payload em claro: só o messageId original — sem conteúdo confidencial (ver MeshPacket)
+            encryptedPayload = original.packetId.encodeToByteArray(),
+            senderPublicKey = localIdentity.publicKey,
+            ttl = TTL_INICIAL,
+            hopCount = 0,
+            createdAt = System.currentTimeMillis()
+        )
+        // Registrar antes de enviar — evita reprocessar o próprio eco do ACK
+        seenCache.markSeen(ack.packetId)
+        nearbyManager.sendToAll(encode(ack), excludeEndpointId = null)
+    }
+
+    /**
+     * ACK chegou ao remetente original: a mensagem foi confirmada no destinatário.
+     * Marca DELIVERED ("✓✓ entregue" no ChatScreen) e emite evento para o MetricsCollector.
+     * Sem timeout no MVP: se o ACK nunca chegar, a mensagem permanece SENDING.
+     */
+    private suspend fun handleAck(packet: MeshPacket) {
+        val messageId = packet.encryptedPayload.decodeToString()
+        val ackReceivedAt = System.currentTimeMillis()
+        messageRepository.updateStatus(messageId, MessageStatus.DELIVERED, ackReceivedAt)
+        _events.emit(
+            Event.AckReceived(
+                messageId = messageId,
+                sourceId = packet.destinationId,
+                destinationId = packet.sourceId,
+                hopCount = packet.hopCount,
+                receivedAt = ackReceivedAt
             )
         )
     }
