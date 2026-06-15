@@ -1,0 +1,43 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(./gradlew :app:compileDebugKotlin)",
+      "Bash(./gradlew :app:testDebugUnitTest)",
+      "Bash(./gradlew :app:testDebugUnitTest --console=plain)",
+      "Bash(java -version)",
+      "Bash(export JAVA_HOME=\"/c/Program Files/Android/Android Studio/jbr\")",
+      "Bash(bc)",
+      "Bash([ -f \"$ADB\" ])",
+      "Bash(/c/Users/onome/AppData/Local/Android/Sdk/platform-tools/adb.exe version *)",
+      "Bash(./gradlew :app:assembleDebug --console=plain)",
+      "Bash(/c/Users/onome/AppData/Local/Android/Sdk/platform-tools/adb.exe devices *)",
+      "Bash(/c/Users/onome/AppData/Local/Android/Sdk/platform-tools/adb.exe -s RXCXB0549AD install -r app/build/outputs/apk/debug/app-debug.apk)",
+      "Bash(/c/Users/onome/AppData/Local/Android/Sdk/platform-tools/adb.exe -s RXCXB0549AD shell getprop ro.build.version.release)",
+      "Bash(/c/Users/onome/AppData/Local/Android/Sdk/platform-tools/adb.exe -s RXCXB0549AD shell getprop ro.build.version.sdk)",
+      "Bash(/c/Users/onome/AppData/Local/Android/Sdk/platform-tools/adb.exe -s RXCXB0549AD logcat -c)",
+      "Bash(/c/Users/onome/AppData/Local/Android/Sdk/platform-tools/adb.exe -s RXCXB0549AD shell monkey -p br.dev.meshpriv -c android.intent.category.LAUNCHER 1)",
+      "Bash(/c/Users/onome/AppData/Local/Android/Sdk/platform-tools/adb.exe -s RXCXB0549AD logcat -d -v brief NearbyConnMgr:I MainActivity:I AndroidRuntime:E *:S)",
+      "Bash(/c/Users/onome/AppData/Local/Android/Sdk/platform-tools/adb.exe -s RXCXB0549AD exec-out screencap -p)",
+      "Bash(/c/Users/onome/AppData/Local/Android/Sdk/platform-tools/adb.exe -s TG8HMFT4ROYTJFEY install -r app/build/outputs/apk/debug/app-debug.apk)",
+      "Bash(/c/Users/onome/AppData/Local/Android/Sdk/platform-tools/adb.exe -s TG8HMFT4ROYTJFEY logcat -c)",
+      "Bash(/c/Users/onome/AppData/Local/Android/Sdk/platform-tools/adb.exe -s TG8HMFT4ROYTJFEY shell monkey -p br.dev.meshpriv -c android.intent.category.LAUNCHER 1)",
+      "Bash(/c/Users/onome/AppData/Local/Android/Sdk/platform-tools/adb.exe -s TG8HMFT4ROYTJFEY exec-out screencap -p)",
+      "Bash(/c/Users/onome/AppData/Local/Android/Sdk/platform-tools/adb.exe -s TG8HMFT4ROYTJFEY shell wm size)",
+      "Bash(/c/Users/onome/AppData/Local/Android/Sdk/platform-tools/adb.exe -s TG8HMFT4ROYTJFEY shell input tap 540 1542)",
+      "Bash(/c/Users/onome/AppData/Local/Android/Sdk/platform-tools/adb.exe -s RXCXB0549AD logcat -d -v brief NearbyConnMgr:I *:S)",
+      "Bash(/c/Users/onome/AppData/Local/Android/Sdk/platform-tools/adb.exe -s RXCXB0549AD shell input tap 540 424)",
+      "Bash(/c/Users/onome/AppData/Local/Android/Sdk/platform-tools/adb.exe -s RXCXB0549AD shell input tap 450 2094)",
+      "Bash(/c/Users/onome/AppData/Local/Android/Sdk/platform-tools/adb.exe -s RXCXB0549AD shell input text Ola%sjoao%svia%smesh)",
+      "Bash(/c/Users/onome/AppData/Local/Android/Sdk/platform-tools/adb.exe -s RXCXB0549AD shell input tap 970 1120)",
+      "Bash(/c/Users/onome/AppData/Local/Android/Sdk/platform-tools/adb.exe -s TG8HMFT4ROYTJFEY shell input tap 360 760)",
+      "Bash(/c/Users/onome/AppData/Local/Android/Sdk/platform-tools/adb.exe -s TG8HMFT4ROYTJFEY shell input tap 360 250)",
+      "Bash(./gradlew :app:testDebugUnitTest :app:assembleDebug --console=plain)",
+      "Bash(/c/Users/onome/AppData/Local/Android/Sdk/platform-tools/adb.exe reconnect *)",
+      "Bash(/c/Users/onome/AppData/Local/Android/Sdk/platform-tools/adb.exe -s 192.168.1.57:5555 shell input tap 540 1055)",
+      "Bash(/c/Users/onome/AppData/Local/Android/Sdk/platform-tools/adb.exe -s 192.168.1.57:5555 exec-out screencap -p)",
+      "Bash(/c/Users/onome/AppData/Local/Android/Sdk/platform-tools/adb.exe -s 192.168.1.57:5555 shell input keyevent KEYCODE_WAKEUP)",
+      "Bash(/c/Users/onome/AppData/Local/Android/Sdk/platform-tools/adb.exe -s 192.168.1.57:5555 shell input swipe 540 1900 540 700)",
+      "Bash(/c/Users/onome/AppData/Local/Android/Sdk/platform-tools/adb.exe -s 192.168.1.57:5555 shell ls -l /sdcard/Android/data/br.dev.meshpriv/files/)"
+    ]
+  }
+}

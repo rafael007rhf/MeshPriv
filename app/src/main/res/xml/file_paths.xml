@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- external-files-path corresponde a context.getExternalFilesDir(null),
+     onde o ExportMetricsCsvUseCase grava os CSVs de métricas -->
+<paths>
+    <external-files-path
+        name="metrics"
+        path="." />
+</paths>
