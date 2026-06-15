@@ -6,6 +6,7 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
 
+<<<<<<< HEAD
 private val defaults = Typography()
 
 // Mantém os defaults do Material 3, reforçando o peso dos títulos para dar hierarquia visual.
@@ -16,6 +17,10 @@ val Typography = Typography(
     headlineSmall = defaults.headlineSmall.copy(fontWeight = FontWeight.Bold),
     titleLarge = defaults.titleLarge.copy(fontWeight = FontWeight.SemiBold),
     titleMedium = defaults.titleMedium.copy(fontWeight = FontWeight.SemiBold),
+=======
+// Set of Material typography styles to start with
+val Typography = Typography(
+>>>>>>> 3e40bf5f49eb6e0fe76096429607711a287e07bc
     bodyLarge = TextStyle(
         fontFamily = FontFamily.Default,
         fontWeight = FontWeight.Normal,
@@ -23,4 +28,24 @@ val Typography = Typography(
         lineHeight = 24.sp,
         letterSpacing = 0.5.sp
     )
+<<<<<<< HEAD
 )
+=======
+    /* Other default text styles to override
+    titleLarge = TextStyle(
+        fontFamily = FontFamily.Default,
+        fontWeight = FontWeight.Normal,
+        fontSize = 22.sp,
+        lineHeight = 28.sp,
+        letterSpacing = 0.sp
+    ),
+    labelSmall = TextStyle(
+        fontFamily = FontFamily.Default,
+        fontWeight = FontWeight.Medium,
+        fontSize = 11.sp,
+        lineHeight = 16.sp,
+        letterSpacing = 0.5.sp
+    )
+    */
+)
+>>>>>>> 3e40bf5f49eb6e0fe76096429607711a287e07bc

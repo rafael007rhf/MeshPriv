@@ -16,9 +16,12 @@ interface MessageDao {
     @Query("UPDATE messages SET status = :status, receivedAt = :receivedAt WHERE messageId = :messageId")
     suspend fun updateStatus(messageId: String, status: String, receivedAt: Long?)
 
+<<<<<<< HEAD
     @Query("DELETE FROM messages WHERE messageId = :messageId")
     suspend fun delete(messageId: String)
 
+=======
+>>>>>>> 3e40bf5f49eb6e0fe76096429607711a287e07bc
     @Query(
         """
         SELECT * FROM messages

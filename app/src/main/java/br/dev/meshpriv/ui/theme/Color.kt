@@ -2,6 +2,7 @@ package br.dev.meshpriv.ui.theme
 
 import androidx.compose.ui.graphics.Color
 
+<<<<<<< HEAD
 // Paleta de marca do MeshPriv — teal/ciano evocando "sinal de rede", com azul de apoio.
 // Cor fixa (sem dynamic color) para identidade consistente entre dispositivos no experimento.
 
@@ -48,3 +49,12 @@ val OutlineLight = Color(0xFF6F7975)
 // Acentos semânticos compartilhados pelos dois temas
 val SignalOnline = Color(0xFF36D399)   // peer conectado / mesh ativa
 val SignalOffline = Color(0xFF6F7975)  // peer offline
+=======
+val Purple80 = Color(0xFFD0BCFF)
+val PurpleGrey80 = Color(0xFFCCC2DC)
+val Pink80 = Color(0xFFEFB8C8)
+
+val Purple40 = Color(0xFF6650a4)
+val PurpleGrey40 = Color(0xFF625b71)
+val Pink40 = Color(0xFF7D5260)
+>>>>>>> 3e40bf5f49eb6e0fe76096429607711a287e07bc

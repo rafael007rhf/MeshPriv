@@ -6,7 +6,10 @@ import androidx.lifecycle.viewModelScope
 import androidx.navigation.toRoute
 import br.dev.meshpriv.domain.model.Message
 import br.dev.meshpriv.domain.model.Peer
+<<<<<<< HEAD
 import br.dev.meshpriv.domain.repository.MessageRepository
+=======
+>>>>>>> 3e40bf5f49eb6e0fe76096429607711a287e07bc
 import br.dev.meshpriv.domain.repository.PeerRepository
 import br.dev.meshpriv.domain.usecase.ObserveMessagesUseCase
 import br.dev.meshpriv.domain.usecase.SendMessageUseCase
@@ -31,8 +34,12 @@ class ChatViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     observeMessages: ObserveMessagesUseCase,
     private val sendMessageUseCase: SendMessageUseCase,
+<<<<<<< HEAD
     private val peerRepository: PeerRepository,
     private val messageRepository: MessageRepository
+=======
+    private val peerRepository: PeerRepository
+>>>>>>> 3e40bf5f49eb6e0fe76096429607711a287e07bc
 ) : ViewModel() {
 
     /** nodeId do peer desta conversa — usado pela UI para alinhar os balões. */
@@ -63,6 +70,7 @@ class ChatViewModel @Inject constructor(
         }
     }
 
+<<<<<<< HEAD
     /**
      * Reenfileira no flooding uma mensagem que falhou: cria um novo envio e remove a antiga
      * (FAILED) para não duplicar na conversa. Útil quando o peer só ficou conhecido depois
@@ -79,6 +87,8 @@ class ChatViewModel @Inject constructor(
         }
     }
 
+=======
+>>>>>>> 3e40bf5f49eb6e0fe76096429607711a287e07bc
     fun clearError() {
         _uiState.update { it.copy(error = null) }
     }

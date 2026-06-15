@@ -1,5 +1,6 @@
 package br.dev.meshpriv.ui.home
 
+<<<<<<< HEAD
 import androidx.compose.animation.core.RepeatMode
 import androidx.compose.animation.core.animateFloat
 import androidx.compose.animation.core.infiniteRepeatable
@@ -8,6 +9,9 @@ import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+=======
+import androidx.compose.foundation.layout.Arrangement
+>>>>>>> 3e40bf5f49eb6e0fe76096429607711a287e07bc
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -16,6 +20,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+<<<<<<< HEAD
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Button
@@ -28,11 +33,24 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
+=======
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.background
+import androidx.compose.material3.Button
+import androidx.compose.material3.Card
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
+>>>>>>> 3e40bf5f49eb6e0fe76096429607711a287e07bc
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+<<<<<<< HEAD
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.text.font.FontFamily
@@ -43,6 +61,12 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import br.dev.meshpriv.ui.components.NodeAvatar
 import br.dev.meshpriv.ui.theme.SignalOffline
 import br.dev.meshpriv.ui.theme.SignalOnline
+=======
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+>>>>>>> 3e40bf5f49eb6e0fe76096429607711a287e07bc
 
 @Composable
 fun HomeScreen(
@@ -66,6 +90,7 @@ private fun HomeContent(
     onNavigateToMetrics: () -> Unit
 ) {
     Scaffold(
+<<<<<<< HEAD
         topBar = {
             TopAppBar(
                 title = {
@@ -76,11 +101,15 @@ private fun HomeContent(
                 )
             )
         }
+=======
+        topBar = { TopAppBar(title = { Text("MeshPriv") }) }
+>>>>>>> 3e40bf5f49eb6e0fe76096429607711a287e07bc
     ) { innerPadding ->
         Column(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(innerPadding)
+<<<<<<< HEAD
                 .padding(horizontal = 16.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
@@ -190,10 +219,61 @@ private fun NetworkStatusCard(isSearching: Boolean, connectedPeerCount: Int) {
                     style = MaterialTheme.typography.labelMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
+=======
+                .padding(16.dp),
+            verticalArrangement = Arrangement.spacedBy(16.dp)
+        ) {
+            Card(modifier = Modifier.fillMaxWidth()) {
+                Column(modifier = Modifier.padding(16.dp)) {
+                    Text(
+                        text = uiState.nickname,
+                        style = MaterialTheme.typography.headlineSmall
+                    )
+                    Text(
+                        text = "ID: ${uiState.nodeId}",
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                }
+            }
+
+            Card(modifier = Modifier.fillMaxWidth()) {
+                Column(modifier = Modifier.padding(16.dp)) {
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Spacer(
+                            modifier = Modifier
+                                .size(10.dp)
+                                .clip(CircleShape)
+                                .background(
+                                    if (uiState.isSearching) MaterialTheme.colorScheme.outline
+                                    else Color(0xFF4CAF50)
+                                )
+                        )
+                        Spacer(modifier = Modifier.size(8.dp))
+                        Text(
+                            text = if (uiState.isSearching) "Buscando peers..." else "Conectado à mesh",
+                            style = MaterialTheme.typography.titleMedium
+                        )
+                    }
+                    Spacer(modifier = Modifier.height(8.dp))
+                    Text(
+                        text = "Peers conectados: ${uiState.connectedPeerCount}",
+                        style = MaterialTheme.typography.bodyMedium
+                    )
+                }
+            }
+
+            Button(onClick = onNavigateToPeers, modifier = Modifier.fillMaxWidth()) {
+                Text("Peers")
+            }
+            OutlinedButton(onClick = onNavigateToMetrics, modifier = Modifier.fillMaxWidth()) {
+                Text("Métricas")
+>>>>>>> 3e40bf5f49eb6e0fe76096429607711a287e07bc
             }
         }
     }
 }
+<<<<<<< HEAD
 
 /** Indicador de status: pulso suave quando conectado, estático/cinza quando buscando. */
 @Composable
@@ -228,3 +308,5 @@ private fun PulsingDot(active: Boolean) {
         )
     }
 }
+=======
+>>>>>>> 3e40bf5f49eb6e0fe76096429607711a287e07bc

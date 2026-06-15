@@ -21,10 +21,13 @@ class MessageRepositoryImpl @Inject constructor(
         messageDao.updateStatus(messageId, status.name, receivedAt)
     }
 
+<<<<<<< HEAD
     override suspend fun deleteMessage(messageId: String) {
         messageDao.delete(messageId)
     }
 
+=======
+>>>>>>> 3e40bf5f49eb6e0fe76096429607711a287e07bc
     override fun observeConversation(localNodeId: String, peerNodeId: String): Flow<List<Message>> =
         messageDao.observeConversation(localNodeId, peerNodeId)
             .map { entities -> entities.map { it.toDomain() } }

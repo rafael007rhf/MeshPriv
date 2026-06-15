@@ -3,6 +3,7 @@
     "allow": [
       "Bash(./gradlew :app:compileDebugKotlin)",
       "Bash(./gradlew :app:testDebugUnitTest)",
+<<<<<<< HEAD
       "Bash(./gradlew :app:testDebugUnitTest --console=plain)",
       "Bash(java -version)",
       "Bash(export JAVA_HOME=\"/c/Program Files/Android/Android Studio/jbr\")",
@@ -38,6 +39,9 @@
       "Bash(/c/Users/onome/AppData/Local/Android/Sdk/platform-tools/adb.exe -s 192.168.1.57:5555 shell input keyevent KEYCODE_WAKEUP)",
       "Bash(/c/Users/onome/AppData/Local/Android/Sdk/platform-tools/adb.exe -s 192.168.1.57:5555 shell input swipe 540 1900 540 700)",
       "Bash(/c/Users/onome/AppData/Local/Android/Sdk/platform-tools/adb.exe -s 192.168.1.57:5555 shell ls -l /sdcard/Android/data/br.dev.meshpriv/files/)"
+=======
+      "Bash(./gradlew :app:testDebugUnitTest --console=plain)"
+>>>>>>> 3e40bf5f49eb6e0fe76096429607711a287e07bc
     ]
   }
 }

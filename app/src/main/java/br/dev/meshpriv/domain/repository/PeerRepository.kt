@@ -9,6 +9,7 @@ interface PeerRepository {
 
     /** Observa todos os peers conhecidos (conectados ou não — histórico incluído). */
     fun observePeers(): Flow<List<Peer>>
+<<<<<<< HEAD
 
     /** Observa só os peers atualmente conectados E identificados (handshake HELLO concluído). */
     fun observeConnectedPeers(): Flow<List<Peer>>
@@ -18,4 +19,6 @@ interface PeerRepository {
 
     /** Atualiza só o estado de conexão de um peer (mantém o registro como histórico). */
     suspend fun setConnected(nodeId: String, isConnected: Boolean, lastSeenAt: Long)
+=======
+>>>>>>> 3e40bf5f49eb6e0fe76096429607711a287e07bc
 }

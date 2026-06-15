@@ -2,7 +2,10 @@ package br.dev.meshpriv.di
 
 import android.content.Context
 import br.dev.meshpriv.data.crypto.CryptoManager
+<<<<<<< HEAD
 import br.dev.meshpriv.data.crypto.IdentityManager
+=======
+>>>>>>> 3e40bf5f49eb6e0fe76096429607711a287e07bc
 import br.dev.meshpriv.data.mesh.MessageRouter
 import br.dev.meshpriv.data.mesh.NearbyConnectionsManager
 import br.dev.meshpriv.data.mesh.SeenMessageCache
@@ -36,9 +39,15 @@ object MeshModule {
     @Singleton
     fun provideNearbyConnectionsManager(
         @ApplicationContext context: Context,
+<<<<<<< HEAD
         identityManager: IdentityManager
     ): NearbyConnectionsManager =
         NearbyConnectionsManager(context) { identityManager.getNickname() }
+=======
+        localIdentity: LocalIdentity
+    ): NearbyConnectionsManager =
+        NearbyConnectionsManager(context, localNickname = localIdentity.nickname)
+>>>>>>> 3e40bf5f49eb6e0fe76096429607711a287e07bc
 
     @Provides
     @Singleton
@@ -52,12 +61,18 @@ object MeshModule {
         seenCache: SeenMessageCache,
         nearbyManager: NearbyConnectionsManager,
         peerRepository: PeerRepository,
+<<<<<<< HEAD
         messageRepository: MessageRepository,
         identityManager: IdentityManager
     ): MessageRouter =
         MessageRouter(
             localIdentity, cryptoManager, seenCache, nearbyManager, peerRepository, messageRepository
         ) { identityManager.getNickname() }
+=======
+        messageRepository: MessageRepository
+    ): MessageRouter =
+        MessageRouter(localIdentity, cryptoManager, seenCache, nearbyManager, peerRepository, messageRepository)
+>>>>>>> 3e40bf5f49eb6e0fe76096429607711a287e07bc
 
     @Provides
     @Singleton

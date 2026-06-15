@@ -18,6 +18,7 @@ class PeerRepositoryImpl @Inject constructor(
     override fun observePeers(): Flow<List<Peer>> =
         peerDao.observeAll().map { entities -> entities.map { it.toDomain() } }
 
+<<<<<<< HEAD
     override fun observeConnectedPeers(): Flow<List<Peer>> =
         peerDao.observeConnected().map { entities -> entities.map { it.toDomain() } }
 
@@ -26,6 +27,8 @@ class PeerRepositoryImpl @Inject constructor(
     override suspend fun setConnected(nodeId: String, isConnected: Boolean, lastSeenAt: Long) =
         peerDao.setConnected(nodeId, isConnected, lastSeenAt)
 
+=======
+>>>>>>> 3e40bf5f49eb6e0fe76096429607711a287e07bc
     private fun PeerEntity.toDomain() = Peer(
         nodeId = nodeId,
         nickname = nickname,
@@ -35,6 +38,7 @@ class PeerRepositoryImpl @Inject constructor(
         lastSeenAt = lastSeenAt,
         isConnected = isConnected
     )
+<<<<<<< HEAD
 
     private fun Peer.toEntity() = PeerEntity(
         nodeId = nodeId,
@@ -45,4 +49,6 @@ class PeerRepositoryImpl @Inject constructor(
         lastSeenAt = lastSeenAt,
         isConnected = isConnected
     )
+=======
+>>>>>>> 3e40bf5f49eb6e0fe76096429607711a287e07bc
 }

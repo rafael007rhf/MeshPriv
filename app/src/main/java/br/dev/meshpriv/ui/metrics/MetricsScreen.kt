@@ -2,6 +2,7 @@ package br.dev.meshpriv.ui.metrics
 
 import android.content.Intent
 import androidx.compose.foundation.layout.Arrangement
+<<<<<<< HEAD
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -9,6 +10,11 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+=======
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+>>>>>>> 3e40bf5f49eb6e0fe76096429607711a287e07bc
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -16,7 +22,10 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
+<<<<<<< HEAD
 import androidx.compose.material3.CardDefaults
+=======
+>>>>>>> 3e40bf5f49eb6e0fe76096429607711a287e07bc
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
@@ -31,17 +40,25 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
+<<<<<<< HEAD
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextAlign
+=======
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
+>>>>>>> 3e40bf5f49eb6e0fe76096429607711a287e07bc
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import br.dev.meshpriv.ui.components.MetricRow
+<<<<<<< HEAD
 import br.dev.meshpriv.ui.theme.SignalOffline
 import br.dev.meshpriv.ui.theme.SignalOnline
+=======
+>>>>>>> 3e40bf5f49eb6e0fe76096429607711a287e07bc
 import java.util.Locale
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -88,6 +105,7 @@ fun MetricsScreen(
                 .padding(16.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
+<<<<<<< HEAD
             Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
                 StatCard(
                     value = "${uiState.totalSent}",
@@ -120,6 +138,24 @@ fun MetricsScreen(
                     MetricRow(label = "Mínima", value = "${uiState.minLatencyMs} ms")
                     MetricRow(label = "Máxima", value = "${uiState.maxLatencyMs} ms")
                     HorizontalDivider(Modifier.padding(vertical = 4.dp))
+=======
+            Card(modifier = Modifier.fillMaxWidth()) {
+                Column(modifier = Modifier.padding(16.dp)) {
+                    Text("Mensagens", style = MaterialTheme.typography.titleMedium)
+                    MetricRow(label = "Enviadas", value = "${uiState.totalSent}")
+                    MetricRow(label = "Entregues", value = "${uiState.totalDelivered}")
+                    MetricRow(label = "Com falha", value = "${uiState.totalFailed}")
+                }
+            }
+
+            Card(modifier = Modifier.fillMaxWidth()) {
+                Column(modifier = Modifier.padding(16.dp)) {
+                    Text("Latência (entregues)", style = MaterialTheme.typography.titleMedium)
+                    MetricRow(label = "Média", value = "${uiState.avgLatencyMs} ms")
+                    MetricRow(label = "Mínima", value = "${uiState.minLatencyMs} ms")
+                    MetricRow(label = "Máxima", value = "${uiState.maxLatencyMs} ms")
+                    HorizontalDivider()
+>>>>>>> 3e40bf5f49eb6e0fe76096429607711a287e07bc
                     MetricRow(
                         label = "Hop count médio",
                         value = String.format(Locale.US, "%.1f", uiState.avgHopCount)
@@ -131,6 +167,7 @@ fun MetricsScreen(
                 }
             }
 
+<<<<<<< HEAD
             if (uiState.totalSent == 0) {
                 Text(
                     text = "Ainda não há métricas. Envie mensagens na mesh para começar a coletar dados.",
@@ -186,6 +223,14 @@ private fun StatCard(
                     style = MaterialTheme.typography.labelMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
+=======
+            Button(
+                onClick = viewModel::exportCsv,
+                enabled = !uiState.isExporting,
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Text(if (uiState.isExporting) "Exportando..." else "Exportar CSV")
+>>>>>>> 3e40bf5f49eb6e0fe76096429607711a287e07bc
             }
         }
     }

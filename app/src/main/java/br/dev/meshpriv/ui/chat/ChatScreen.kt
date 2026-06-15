@@ -4,10 +4,15 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+<<<<<<< HEAD
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+=======
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+>>>>>>> 3e40bf5f49eb6e0fe76096429607711a287e07bc
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
@@ -16,7 +21,10 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.filled.Send
+<<<<<<< HEAD
 import androidx.compose.material3.AlertDialog
+=======
+>>>>>>> 3e40bf5f49eb6e0fe76096429607711a287e07bc
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -26,7 +34,10 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
+<<<<<<< HEAD
 import androidx.compose.material3.TextButton
+=======
+>>>>>>> 3e40bf5f49eb6e0fe76096429607711a287e07bc
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -36,6 +47,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+<<<<<<< HEAD
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -43,6 +55,12 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import br.dev.meshpriv.domain.model.MessageStatus
 import br.dev.meshpriv.ui.components.MessageBubble
 import java.security.MessageDigest
+=======
+import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import br.dev.meshpriv.ui.components.MessageBubble
+>>>>>>> 3e40bf5f49eb6e0fe76096429607711a287e07bc
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -52,6 +70,7 @@ fun ChatScreen(
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     var inputText by remember { mutableStateOf("") }
+<<<<<<< HEAD
     var showFingerprint by remember { mutableStateOf(false) }
     val listState = rememberLazyListState()
     val snackbarHostState = remember { SnackbarHostState() }
@@ -64,6 +83,11 @@ fun ChatScreen(
         )
     }
 
+=======
+    val listState = rememberLazyListState()
+    val snackbarHostState = remember { SnackbarHostState() }
+
+>>>>>>> 3e40bf5f49eb6e0fe76096429607711a287e07bc
     // Rolar para a última mensagem quando uma nova chega
     LaunchedEffect(uiState.messages.size) {
         if (uiState.messages.isNotEmpty()) {
@@ -97,12 +121,15 @@ fun ChatScreen(
                     IconButton(onClick = onNavigateBack) {
                         Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Voltar")
                     }
+<<<<<<< HEAD
                 },
                 actions = {
                     // Cadeado: reforça que a conversa é cifrada E2E e abre o fingerprint da chave
                     IconButton(onClick = { showFingerprint = true }) {
                         Text("🔒", style = MaterialTheme.typography.titleMedium)
                     }
+=======
+>>>>>>> 3e40bf5f49eb6e0fe76096429607711a287e07bc
                 }
             )
         },
@@ -123,6 +150,7 @@ fun ChatScreen(
                 verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
                 items(uiState.messages, key = { it.messageId }) { message ->
+<<<<<<< HEAD
                     val isOwn = message.senderId != viewModel.peerId
                     MessageBubble(
                         message = message,
@@ -132,6 +160,11 @@ fun ChatScreen(
                         } else {
                             null
                         }
+=======
+                    MessageBubble(
+                        message = message,
+                        isOwnMessage = message.senderId != viewModel.peerId
+>>>>>>> 3e40bf5f49eb6e0fe76096429607711a287e07bc
                     )
                 }
             }
@@ -162,6 +195,7 @@ fun ChatScreen(
         }
     }
 }
+<<<<<<< HEAD
 
 @Composable
 private fun FingerprintDialog(
@@ -211,3 +245,5 @@ private fun fingerprint(publicKey: ByteArray): String {
     val hex = digest.take(16).joinToString("") { "%02X".format(it) }
     return hex.chunked(4).joinToString(" ")
 }
+=======
+>>>>>>> 3e40bf5f49eb6e0fe76096429607711a287e07bc

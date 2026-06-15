@@ -2,12 +2,18 @@ package br.dev.meshpriv.data.mesh
 
 import br.dev.meshpriv.data.crypto.CryptoManager
 import br.dev.meshpriv.domain.model.LocalIdentity
+<<<<<<< HEAD
 import br.dev.meshpriv.domain.model.MeshFrame
+=======
+>>>>>>> 3e40bf5f49eb6e0fe76096429607711a287e07bc
 import br.dev.meshpriv.domain.model.MeshPacket
 import br.dev.meshpriv.domain.model.Message
 import br.dev.meshpriv.domain.model.MessageStatus
 import br.dev.meshpriv.domain.model.PacketType
+<<<<<<< HEAD
 import br.dev.meshpriv.domain.model.Peer
+=======
+>>>>>>> 3e40bf5f49eb6e0fe76096429607711a287e07bc
 import br.dev.meshpriv.domain.repository.MessageRepository
 import br.dev.meshpriv.domain.repository.PeerRepository
 import kotlinx.coroutines.CoroutineScope
@@ -17,7 +23,10 @@ import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.launch
 import kotlinx.serialization.json.Json
 import java.util.UUID
+<<<<<<< HEAD
 import java.util.concurrent.ConcurrentHashMap
+=======
+>>>>>>> 3e40bf5f49eb6e0fe76096429607711a287e07bc
 
 /**
  * Decide o destino de cada MeshPacket: entregar, descartar ou retransmitir (flooding com TTL).
@@ -28,9 +37,13 @@ class MessageRouter(
     private val seenCache: SeenMessageCache,
     private val nearbyManager: NearbyConnectionsManager,
     private val peerRepository: PeerRepository,
+<<<<<<< HEAD
     private val messageRepository: MessageRepository,
     // Apelido lido ao vivo no HELLO; o default preserva os testes que não passam provider.
     private val nicknameProvider: () -> String = { localIdentity.nickname }
+=======
+    private val messageRepository: MessageRepository
+>>>>>>> 3e40bf5f49eb6e0fe76096429607711a287e07bc
 ) {
 
     companion object {
@@ -39,12 +52,15 @@ class MessageRouter(
 
     private val json = Json { ignoreUnknownKeys = true }
 
+<<<<<<< HEAD
     // Mapa endpointId (volátil, do Nearby) → nodeId (estável, da identidade), preenchido pelo
     // handshake HELLO. Permite marcar o peer certo como offline quando o Nearby só nos dá o
     // endpointId na desconexão. Concorrente: alimentado pela recepção de HELLO e lido pela
     // observação de desconexões, em coroutines distintas.
     private val endpointToNode = ConcurrentHashMap<String, String>()
 
+=======
+>>>>>>> 3e40bf5f49eb6e0fe76096429607711a287e07bc
     private val _deliveredMessages = MutableSharedFlow<Message>(extraBufferCapacity = 64)
     val deliveredMessages: SharedFlow<Message> = _deliveredMessages.asSharedFlow()
 
@@ -75,6 +91,7 @@ class MessageRouter(
 
     /** Conecta o roteador ao fluxo de bytes brutos vindos do Nearby Connections. */
     fun start(scope: CoroutineScope) {
+<<<<<<< HEAD
         // Frames recebidos: pacotes roteáveis vão ao flooding; HELLO popula o PeerRepository
         scope.launch {
             nearbyManager.incomingPackets.collect { (endpointId, bytes) ->
@@ -98,6 +115,15 @@ class MessageRouter(
                 (currentSet - previous).forEach { sendHello(it) }
                 (previous - currentSet).forEach { onEndpointDisconnected(it) }
                 previous = currentSet
+=======
+        scope.launch {
+            nearbyManager.incomingPackets.collect { (endpointId, bytes) ->
+                // Bytes malformados (peer com versão incompatível) são descartados em silêncio
+                val packet = runCatching {
+                    json.decodeFromString<MeshPacket>(bytes.decodeToString())
+                }.getOrNull() ?: return@collect
+                onPacketReceived(endpointId, packet)
+>>>>>>> 3e40bf5f49eb6e0fe76096429607711a287e07bc
             }
         }
     }
@@ -202,9 +228,13 @@ class MessageRouter(
                 content = content,
                 sentAt = packet.createdAt,
                 receivedAt = System.currentTimeMillis(),
+<<<<<<< HEAD
                 // +1 conta o enlace final (origem→destino). Assim o hopCount = nº de enlaces
                 // percorridos: entrega direta = 1, via 1 relay (A→B→C) = 2 (ver CLAUDE.md §16).
                 hopCount = packet.hopCount + 1,
+=======
+                hopCount = packet.hopCount,
+>>>>>>> 3e40bf5f49eb6e0fe76096429607711a287e07bc
                 status = MessageStatus.DELIVERED
             )
         )
@@ -249,13 +279,18 @@ class MessageRouter(
                 messageId = messageId,
                 sourceId = packet.destinationId,
                 destinationId = packet.sourceId,
+<<<<<<< HEAD
                 // Mesma convenção da entrega: +1 para contar enlaces percorridos pelo ACK na volta
                 hopCount = packet.hopCount + 1,
+=======
+                hopCount = packet.hopCount,
+>>>>>>> 3e40bf5f49eb6e0fe76096429607711a287e07bc
                 receivedAt = ackReceivedAt
             )
         )
     }
 
+<<<<<<< HEAD
     /**
      * Apresenta este nó a um endpoint recém-conectado. Envio ponto-a-ponto (sendTo, não
      * flooding): o HELLO não é roteável e só interessa ao vizinho direto.
@@ -304,4 +339,8 @@ class MessageRouter(
 
     private fun encodeFrame(frame: MeshFrame): ByteArray =
         json.encodeToString(MeshFrame.serializer(), frame).encodeToByteArray()
+=======
+    private fun encode(packet: MeshPacket): ByteArray =
+        json.encodeToString(MeshPacket.serializer(), packet).encodeToByteArray()
+>>>>>>> 3e40bf5f49eb6e0fe76096429607711a287e07bc
 }

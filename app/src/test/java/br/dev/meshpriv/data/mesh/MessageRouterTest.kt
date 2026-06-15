@@ -3,7 +3,10 @@ package br.dev.meshpriv.data.mesh
 import app.cash.turbine.test
 import br.dev.meshpriv.data.crypto.CryptoManager
 import br.dev.meshpriv.domain.model.LocalIdentity
+<<<<<<< HEAD
 import br.dev.meshpriv.domain.model.MeshFrame
+=======
+>>>>>>> 3e40bf5f49eb6e0fe76096429607711a287e07bc
 import br.dev.meshpriv.domain.model.MeshPacket
 import br.dev.meshpriv.domain.model.MessageStatus
 import br.dev.meshpriv.domain.model.PacketType
@@ -98,14 +101,22 @@ class MessageRouterTest {
             val mensagem = awaitItem()
             assertEquals("olá, Rafael", mensagem.content)
             assertEquals("CCCC3333", mensagem.senderId)
+<<<<<<< HEAD
             // Pacote chega com hopCount=2 (2 relays anteriores) + enlace final = 3 enlaces
             assertEquals(3, mensagem.hopCount)
+=======
+            assertEquals(2, mensagem.hopCount)
+>>>>>>> 3e40bf5f49eb6e0fe76096429607711a287e07bc
             assertEquals(MessageStatus.DELIVERED, mensagem.status)
         }
         // Pacote entregue não é retransmitido — o único envio após a entrega é o ACK
         val bytesSlot = slot<ByteArray>()
         verify(exactly = 1) { nearbyManager.sendToAll(capture(bytesSlot), isNull()) }
+<<<<<<< HEAD
         val enviado = decodeMesh(bytesSlot.captured)
+=======
+        val enviado = Json.decodeFromString<MeshPacket>(bytesSlot.captured.decodeToString())
+>>>>>>> 3e40bf5f49eb6e0fe76096429607711a287e07bc
         assertEquals(PacketType.ACK, enviado.type)
     }
 
@@ -118,7 +129,11 @@ class MessageRouterTest {
 
         val bytesSlot = slot<ByteArray>()
         verify { nearbyManager.sendToAll(capture(bytesSlot), isNull()) }
+<<<<<<< HEAD
         val ack = decodeMesh(bytesSlot.captured)
+=======
+        val ack = Json.decodeFromString<MeshPacket>(bytesSlot.captured.decodeToString())
+>>>>>>> 3e40bf5f49eb6e0fe76096429607711a287e07bc
         assertEquals(PacketType.ACK, ack.type)
         assertEquals("AAAA1111", ack.sourceId)                 // quem recebeu envia o ACK
         assertEquals("CCCC3333", ack.destinationId)            // de volta ao remetente original
@@ -138,8 +153,12 @@ class MessageRouterTest {
             val evento = awaitItem()
             assertTrue(evento is MessageRouter.Event.AckReceived)
             assertEquals("msg-original", (evento as MessageRouter.Event.AckReceived).messageId)
+<<<<<<< HEAD
             // ACK chega com hopCount=2 + enlace final = 3 enlaces na volta
             assertEquals(3, evento.hopCount)
+=======
+            assertEquals(2, evento.hopCount)
+>>>>>>> 3e40bf5f49eb6e0fe76096429607711a287e07bc
         }
         coVerify(exactly = 1) {
             messageRepository.updateStatus("msg-original", MessageStatus.DELIVERED, any())
@@ -153,7 +172,11 @@ class MessageRouterTest {
         router.onPacketReceived("ep-origem", ackPacket(destinationId = "OUTRO999", ttl = 5, hopCount = 1))
 
         verify { nearbyManager.sendToAll(capture(bytesSlot), eq("ep-origem")) }
+<<<<<<< HEAD
         val retransmitido = decodeMesh(bytesSlot.captured)
+=======
+        val retransmitido = Json.decodeFromString<MeshPacket>(bytesSlot.captured.decodeToString())
+>>>>>>> 3e40bf5f49eb6e0fe76096429607711a287e07bc
         assertEquals(PacketType.ACK, retransmitido.type)
         assertEquals(4, retransmitido.ttl)
         assertEquals(2, retransmitido.hopCount)
@@ -212,7 +235,11 @@ class MessageRouterTest {
         router.onPacketReceived("ep-origem", pacote)
 
         verify { nearbyManager.sendToAll(capture(bytesSlot), eq("ep-origem")) }
+<<<<<<< HEAD
         val retransmitido = decodeMesh(bytesSlot.captured)
+=======
+        val retransmitido = Json.decodeFromString<MeshPacket>(bytesSlot.captured.decodeToString())
+>>>>>>> 3e40bf5f49eb6e0fe76096429607711a287e07bc
         assertEquals(4, retransmitido.ttl)
         assertEquals(2, retransmitido.hopCount)
         assertEquals(pacote.packetId, retransmitido.packetId)
@@ -239,7 +266,11 @@ class MessageRouterTest {
 
         assertEquals(MessageStatus.SENDING, mensagem.status)
         verify { nearbyManager.sendToAll(capture(bytesSlot), isNull()) }
+<<<<<<< HEAD
         val pacote = decodeMesh(bytesSlot.captured)
+=======
+        val pacote = Json.decodeFromString<MeshPacket>(bytesSlot.captured.decodeToString())
+>>>>>>> 3e40bf5f49eb6e0fe76096429607711a287e07bc
         assertEquals(MessageRouter.TTL_INICIAL, pacote.ttl)
         assertEquals(0, pacote.hopCount)
         assertEquals("AAAA1111", pacote.sourceId)
@@ -256,6 +287,7 @@ class MessageRouterTest {
         assertEquals(MessageStatus.FAILED, mensagem.status)
         verify { nearbyManager wasNot Called }
     }
+<<<<<<< HEAD
 
     // --- Handshake de identidade (HELLO) ---
 
@@ -320,4 +352,6 @@ class MessageRouterTest {
 
     private fun decodeMesh(bytes: ByteArray): MeshPacket =
         (Json.decodeFromString<MeshFrame>(bytes.decodeToString()) as MeshFrame.Mesh).packet
+=======
+>>>>>>> 3e40bf5f49eb6e0fe76096429607711a287e07bc
 }

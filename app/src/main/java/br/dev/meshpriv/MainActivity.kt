@@ -8,6 +8,7 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.contract.ActivityResultContracts
+<<<<<<< HEAD
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -16,6 +17,10 @@ import br.dev.meshpriv.data.crypto.IdentityManager
 import br.dev.meshpriv.data.mesh.NearbyConnectionsManager
 import br.dev.meshpriv.ui.navigation.AppNavGraph
 import br.dev.meshpriv.ui.onboarding.OnboardingScreen
+=======
+import br.dev.meshpriv.data.mesh.NearbyConnectionsManager
+import br.dev.meshpriv.ui.navigation.AppNavGraph
+>>>>>>> 3e40bf5f49eb6e0fe76096429607711a287e07bc
 import br.dev.meshpriv.ui.theme.MeshPrivTheme
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
@@ -26,9 +31,12 @@ class MainActivity : ComponentActivity() {
     @Inject
     lateinit var nearbyManager: NearbyConnectionsManager
 
+<<<<<<< HEAD
     @Inject
     lateinit var identityManager: IdentityManager
 
+=======
+>>>>>>> 3e40bf5f49eb6e0fe76096429607711a287e07bc
     private val requiredPermissions: Array<String>
         get() = buildList {
             add(Manifest.permission.ACCESS_FINE_LOCATION)
@@ -58,6 +66,7 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
 
+<<<<<<< HEAD
         // Já tem apelido: pede permissões e segue direto. Sem apelido: o onboarding precede
         // o pedido de permissões para que o advertising/HELLO já saiam com o nome correto.
         val onboarded = identityManager.isOnboarded()
@@ -77,6 +86,13 @@ class MainActivity : ComponentActivity() {
                 } else {
                     AppNavGraph()
                 }
+=======
+        permissionLauncher.launch(requiredPermissions)
+
+        setContent {
+            MeshPrivTheme {
+                AppNavGraph()
+>>>>>>> 3e40bf5f49eb6e0fe76096429607711a287e07bc
             }
         }
     }

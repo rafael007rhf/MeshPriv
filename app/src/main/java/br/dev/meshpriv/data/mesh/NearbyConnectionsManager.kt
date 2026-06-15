@@ -24,9 +24,13 @@ import kotlinx.coroutines.flow.asStateFlow
 
 class NearbyConnectionsManager(
     private val context: Context,
+<<<<<<< HEAD
     // Apelido lido ao vivo: o singleton é criado antes do onboarding, então capturar a String
     // na construção prenderia o nome em "Anônimo" na primeira sessão.
     private val nicknameProvider: () -> String
+=======
+    private val localNickname: String
+>>>>>>> 3e40bf5f49eb6e0fe76096429607711a287e07bc
 ) {
 
     companion object {
@@ -78,7 +82,11 @@ class NearbyConnectionsManager(
     private val endpointDiscoveryCallback = object : EndpointDiscoveryCallback() {
         override fun onEndpointFound(endpointId: String, info: DiscoveredEndpointInfo) {
             Log.i(TAG, "Endpoint encontrado: id=$endpointId nome=${info.endpointName}")
+<<<<<<< HEAD
             connectionsClient.requestConnection(nicknameProvider(), endpointId, connectionLifecycleCallback)
+=======
+            connectionsClient.requestConnection(localNickname, endpointId, connectionLifecycleCallback)
+>>>>>>> 3e40bf5f49eb6e0fe76096429607711a287e07bc
                 .addOnFailureListener { e ->
                     Log.e(TAG, "Falha ao solicitar conexão com $endpointId: ${e.message}")
                 }
@@ -109,6 +117,7 @@ class NearbyConnectionsManager(
             .addOnFailureListener { e -> Log.e(TAG, "Falha ao enviar payload: ${e.message}") }
     }
 
+<<<<<<< HEAD
     /** Envia bytes para um único endpoint (handshake HELLO ponto-a-ponto, fora do flooding). */
     fun sendTo(endpointId: String, bytes: ByteArray) {
         connectionsClient.sendPayload(endpointId, Payload.fromBytes(bytes))
@@ -122,15 +131,24 @@ class NearbyConnectionsManager(
     fun start() {
         if (started) return
         started = true
+=======
+    fun start() {
+>>>>>>> 3e40bf5f49eb6e0fe76096429607711a287e07bc
         startAdvertising()
         startDiscovery()
     }
 
     private fun startAdvertising() {
+<<<<<<< HEAD
         val nickname = nicknameProvider()
         val options = AdvertisingOptions.Builder().setStrategy(STRATEGY).build()
         connectionsClient.startAdvertising(nickname, SERVICE_ID, connectionLifecycleCallback, options)
             .addOnSuccessListener { Log.i(TAG, "Advertising iniciado como '$nickname'") }
+=======
+        val options = AdvertisingOptions.Builder().setStrategy(STRATEGY).build()
+        connectionsClient.startAdvertising(localNickname, SERVICE_ID, connectionLifecycleCallback, options)
+            .addOnSuccessListener { Log.i(TAG, "Advertising iniciado como '$localNickname'") }
+>>>>>>> 3e40bf5f49eb6e0fe76096429607711a287e07bc
             .addOnFailureListener { e -> Log.e(TAG, "Falha ao iniciar advertising: ${e.message}") }
     }
 
@@ -146,7 +164,10 @@ class NearbyConnectionsManager(
         connectionsClient.stopDiscovery()
         connectionsClient.stopAllEndpoints()
         _connectedEndpoints.value = emptyList()
+<<<<<<< HEAD
         started = false
+=======
+>>>>>>> 3e40bf5f49eb6e0fe76096429607711a287e07bc
         Log.i(TAG, "Nearby Connections encerrado")
     }
 }

@@ -49,6 +49,7 @@ class IdentityManager(private val context: Context) {
         publicPrefs.edit().putString(KEY_NICKNAME, nickname).apply()
     }
 
+<<<<<<< HEAD
     /** Apelido atual lido ao vivo das preferências — fonte única de verdade para o advertising e o HELLO. */
     fun getNickname(): String =
         publicPrefs.getString(KEY_NICKNAME, NICKNAME_DEFAULT) ?: NICKNAME_DEFAULT
@@ -56,6 +57,8 @@ class IdentityManager(private val context: Context) {
     /** True quando o usuário já definiu um apelido (onboarding concluído). */
     fun isOnboarded(): Boolean = publicPrefs.contains(KEY_NICKNAME)
 
+=======
+>>>>>>> 3e40bf5f49eb6e0fe76096429607711a287e07bc
     private fun generateAndPersist(): LocalIdentity {
         val generator = X25519KeyPairGenerator()
         generator.init(X25519KeyGenerationParameters(SecureRandom()))
